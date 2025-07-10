@@ -26,6 +26,7 @@ export default function SignUpPage() {
     try {
       const res = await fetch('http://localhost:8000/api/auth/register', {
         method: 'POST',
+        credentials: 'include',
         body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json'
