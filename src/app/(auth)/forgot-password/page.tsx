@@ -3,28 +3,24 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import Link from 'next/link'
+import { Label } from '@/components/ui/label' 
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { useUserStore } from '@/stores/userStore'
 
 type FormData = {
   email: string
-  password: string
 }
 
-export default function SignInPage() {
+export default function ForgotPasswordPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
   const router = useRouter()
-  const { setUser } = useUserStore()
 
   const onSubmit = async (data: FormData) => {
     try {
-      const res = await fetch('http://localhost:8000/api/auth/login', {
+      const res = await fetch('http://localhost:8000/api/auth/forgot-password', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify(data),
@@ -33,16 +29,14 @@ export default function SignInPage() {
         }
       })
       if (res.ok) {
-        const userData = await res.json()
-        setUser(userData.user)
-        toast.success('Connexion réussie !')
-        router.push('/')
+        toast.success('Lien de réinitialisation envoyé avec succès !')
+        router.push('/sign-in')
       } else {
         const errorData = await res.json()
-        toast.error(errorData.message || 'Erreur lors de la connexion')
+        toast.error(errorData.message || 'Erreur lors de l\'envoi du lien de réinitialisation')
       }
     } catch (error) {
-      toast.error('Erreur lors de la connexion')
+      toast.error('Erreur lors de l\'envoi du lien de réinitialisation')
       console.log(error)
     }
   }
@@ -54,7 +48,7 @@ export default function SignInPage() {
           <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
             <CardHeader>
               <h1 className='text-4xl w-full text-center mb-6 text-text font-poppins font-bold'>
-                Se connecter
+                Mot de passe oublié
               </h1>
             </CardHeader>
             <CardContent className='flex flex-col gap-4'>
@@ -65,22 +59,9 @@ export default function SignInPage() {
                   {errors.email && <p className='text-sm text-destructive'>{errors.email.message}</p>}
                 </div>
               </div>
-              <div className='flex flex-col gap-2'>
-                <Label htmlFor="password">Mot de passe</Label>
-                <div>
-                  <Input type="password" id="password" {...register('password', { required: "Le mot de passe est requis" })} />
-                  {errors.password && <p className='text-sm text-destructive'>{errors.password.message}</p>}
-                </div>
-              </div>
             </CardContent>
             <CardFooter className='flex flex-col gap-4'>
-              <Button type="submit" className='w-full'>Se connecter</Button>
-              <p className='text-sm text-muted-foreground text-center'>
-                Pas de compte ? <Link href="/sign-up">S&apos;inscrire</Link>
-              </p>
-              <p className='text-sm text-muted-foreground text-center'>
-                Mot de passe oublié ? <Link href="/forgot-password">Réinitialiser le mot de passe</Link>
-              </p>
+              <Button type="submit" className='w-full'>Envoyer le lien de réinitialisation</Button>
             </CardFooter>
           </form>
         </Card>

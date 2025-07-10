@@ -10,6 +10,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { useUserStore } from '@/stores/userStore'
 
 type FormData = {
   firstName: string
@@ -21,6 +22,7 @@ type FormData = {
 export default function SignUpPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
   const router = useRouter()
+  const { setUser } = useUserStore()
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -33,7 +35,13 @@ export default function SignUpPage() {
         }
       })
       if (res.ok) {
+        const userData = await res.json()
+        setUser(userData.user)
+        toast.success('Inscription réussie !')
         router.push('/')
+      } else {
+        const errorData = await res.json()
+        toast.error(errorData.message || 'Erreur lors de l\'inscription')
       }
     } catch (error) {
       toast.error('Erreur lors de l\'inscription')
@@ -42,7 +50,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className='w-full flex justify-center items-center my-auto h-screen'>
+      <div className='w-full flex justify-center items-center my-auto h-screen'>
       <section className='flex flex-col w-full sm:w-[400px] justify-center'>
         <Card className='flex flex-col gap-4'>
           <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
@@ -102,6 +110,6 @@ export default function SignUpPage() {
         pauseOnHover
         theme="light"
       />
-    </div>
+      </div>
   )
 }
