@@ -5,16 +5,17 @@ import { Locker } from './(admin)/administration/page'
 import HomeFilters from '@/components/Home/HomeFilters'
 import { Card } from '@/components/ui/card'
 
-async function getLockers (): Promise<Locker[]> {
-
+async function getLockers (startDate: string, endDate: string): Promise<Locker[]> {
   try {
-    const response = await fetch('http://localhost:8000/api/lockers', {
+    const response = await fetch(`http://localhost:8000/api/lockers?startDate=${startDate}&endDate=${endDate}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
       cache: 'no-store'
     })
+
+    console.log(response);
 
     if (!response.ok) {
       throw new Error('Failed to fetch lockers')
@@ -27,15 +28,19 @@ async function getLockers (): Promise<Locker[]> {
   }
 }
 
-export default async function Page() {
-  const lockers = await getLockers()
+export default async function Page({ searchParams }: { searchParams: Promise<{ startDate?: string, endDate?: string }> }) {
+  const params = await searchParams
+  const lockers = await getLockers(params.startDate || '', params.endDate || '')  
+
+  console.log(lockers);
+
   return (
     <main className='mx-8'>
        <WelcomeSection />
 
       <Card className='flex flex-col gap-4 p-4'>
         <HomeFilters />
-        <LockersTable lockers={lockers} />
+        <LockersTable lockers={lockers} isInAdmin={false} />
       </Card>
     </main>
   )

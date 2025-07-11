@@ -35,23 +35,36 @@ function isValidDate(date: Date | undefined) {
 export function DatePicker({ 
   label, 
   initialDate, 
-  onDateChange 
+  onDateChange,
+  fromDate,
+  toDate,
+  disabled
 }: { 
   label: string, 
   initialDate: Date,
-  onDateChange?: (date: Date | undefined) => void 
+  onDateChange?: (date: Date | undefined) => void,
+  fromDate?: Date,
+  toDate?: Date,
+  disabled?: boolean
 }) {
   const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(
-    initialDate
-  )
-  const [month, setMonth] = React.useState<Date | undefined>(date)
-  const [value, setValue] = React.useState(formatDate(date))
+  const [date, setDate] = React.useState<Date | undefined>(initialDate)
+  const [month, setMonth] = React.useState<Date | undefined>(initialDate)
+  const [value, setValue] = React.useState(formatDate(initialDate))
+
+  // Synchroniser avec les changements de initialDate
+  React.useEffect(() => {
+    setDate(initialDate)
+    setMonth(initialDate)
+    setValue(formatDate(initialDate))
+  }, [initialDate])
 
   // Notify parent when date changes
   React.useEffect(() => {
-    onDateChange?.(date)
-  }, [date, onDateChange])
+    if (date && onDateChange) {
+      onDateChange(date)
+    }
+  }, [date])
 
   return (
     <div className="flex flex-col gap-3">
@@ -78,7 +91,9 @@ export function DatePicker({
               setOpen(true)
             }
           }}
+          disabled={disabled}
         />
+        {!disabled && (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -96,20 +111,23 @@ export function DatePicker({
             alignOffset={-8}
             sideOffset={10}
           >
-            <Calendar
-              mode="single"
-              selected={date}
-              captionLayout="dropdown"
-              month={month}
-              onMonthChange={setMonth}
-              onSelect={(date) => {
-                setDate(date)
-                setValue(formatDate(date))
-                setOpen(false)
-              }}
-            />
-          </PopoverContent>
-        </Popover>
+                          <Calendar
+                mode="single"
+                selected={date}
+                captionLayout="dropdown"
+                month={month}
+                onMonthChange={setMonth}
+                onSelect={(date) => {
+                  setDate(date)
+                  setValue(formatDate(date))
+                  setOpen(false)
+                }}
+                fromDate={fromDate}
+                toDate={toDate}
+              />
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
     </div>
   )

@@ -8,6 +8,10 @@ export interface Locker {
   rowNumber: number
   size: string
   price: number
+  availability: {
+    status: string,
+    nextAvailableDate: Date | null,
+  }
 }
 
 async function getLockers (): Promise<Locker[]> {
@@ -39,7 +43,7 @@ export default async function page() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Gestion des Casiers</h1>
       </div>
-      <LockersTable lockers={lockers} />
+      <LockersTable lockers={lockers} isInAdmin={true} />
     </div>
   )
 }
