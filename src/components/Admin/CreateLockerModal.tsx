@@ -141,7 +141,6 @@ export default function CreateLockerModal({ isOpen = false, onOpenChange, isUpda
                   <SelectItem value="S">Petit (S)</SelectItem>
                   <SelectItem value="M">Moyen (M)</SelectItem>
                   <SelectItem value="L">Grand (L)</SelectItem>
-                  <SelectItem value="XL">Très grand (XL)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

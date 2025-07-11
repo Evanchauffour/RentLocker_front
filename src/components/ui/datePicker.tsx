@@ -38,14 +38,16 @@ export function DatePicker({
   onDateChange,
   fromDate,
   toDate,
-  disabled
+  disabled,
+  placeholder
 }: { 
   label: string, 
-  initialDate: Date,
+  initialDate: Date | undefined,
   onDateChange?: (date: Date | undefined) => void,
   fromDate?: Date,
   toDate?: Date,
-  disabled?: boolean
+  disabled?: boolean,
+  placeholder?: string
 }) {
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(initialDate)
@@ -59,12 +61,13 @@ export function DatePicker({
     setValue(formatDate(initialDate))
   }, [initialDate])
 
-  // Notify parent when date changes
-  React.useEffect(() => {
-    if (date && onDateChange) {
-      onDateChange(date)
+  const handleDateChange = (newDate: Date | undefined) => {
+    setDate(newDate)
+    setValue(formatDate(newDate))
+    if (onDateChange) {
+      onDateChange(newDate)
     }
-  }, [date])
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -75,13 +78,20 @@ export function DatePicker({
         <Input
           id="date"
           value={value}
-          placeholder="June 01, 2025"
+          placeholder={placeholder || "June 01, 2025"}
           className="bg-background pr-10"
           onChange={(e) => {
-            const date = new Date(e.target.value)
-            setValue(e.target.value)
+            const inputValue = e.target.value
+            setValue(inputValue)
+            
+            if (inputValue === "") {
+              handleDateChange(undefined)
+              return
+            }
+            
+            const date = new Date(inputValue)
             if (isValidDate(date)) {
-              setDate(date)
+              handleDateChange(date)
               setMonth(date)
             }
           }}
@@ -117,9 +127,8 @@ export function DatePicker({
                 captionLayout="dropdown"
                 month={month}
                 onMonthChange={setMonth}
-                onSelect={(date) => {
-                  setDate(date)
-                  setValue(formatDate(date))
+                onSelect={(newDate) => {
+                  handleDateChange(newDate)
                   setOpen(false)
                 }}
                 fromDate={fromDate}

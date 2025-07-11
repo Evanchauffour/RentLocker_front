@@ -73,7 +73,9 @@ export default function LockersTable({ lockers, isInAdmin = false }: LockersTabl
             <TableHead>Rangée</TableHead>
             <TableHead>Taille</TableHead>
             <TableHead>Prix (€) / jour</TableHead>
-            <TableHead>Disponibilité</TableHead>
+            {!isInAdmin && (
+              <TableHead>Disponibilité</TableHead>
+            )}
             {isInAdmin && (
               <TableHead className="w-[50px]"></TableHead>
             )}
@@ -90,29 +92,22 @@ export default function LockersTable({ lockers, isInAdmin = false }: LockersTabl
               <TableCell>{locker.rowNumber}</TableCell>
               <TableCell>{locker.size}</TableCell>
               <TableCell>{locker.price}€</TableCell>
+              {!isInAdmin && (
               <TableCell>
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${
                       locker.availability?.status === 'available' ? 'bg-green-500' :
-                      locker.availability?.status === 'partially_available' ? 'bg-yellow-500' :
                       locker.availability?.status === 'unavailable' ? 'bg-red-500' : 'bg-gray-300'
                     }`}></div>
                     <span className={`text-sm font-medium ${
                       locker.availability?.status === 'available' ? 'text-green-700' :
-                      locker.availability?.status === 'partially_available' ? 'text-yellow-700' :
                       locker.availability?.status === 'unavailable' ? 'text-red-700' : 'text-gray-500'
                     }`}>
                       {locker.availability?.status === 'available' ? 'Disponible' :
-                       locker.availability?.status === 'partially_available' ? 'Partiellement' :
                        locker.availability?.status === 'unavailable' ? 'Indisponible' : 'Inconnu'}
                     </span>
                   </div>
-                  {locker.availability?.status === 'partially_available' && locker.availability?.nextAvailableDate && (
-                    <div className="text-xs text-gray-500 ml-5">
-                      Prochaine disponibilité: {new Date(locker.availability.nextAvailableDate).toLocaleDateString('fr-FR')}
-                    </div>
-                  )}
                   {locker.availability?.status === 'unavailable' && locker.availability?.nextAvailableDate && (
                     <div className="text-xs text-gray-500 ml-5">
                       Prochaine disponibilité: {new Date(locker.availability.nextAvailableDate).toLocaleDateString('fr-FR')}
@@ -120,6 +115,7 @@ export default function LockersTable({ lockers, isInAdmin = false }: LockersTabl
                   )}
                 </div>
               </TableCell>
+              )}
               {isInAdmin && (
               <TableCell>
                 <DropdownMenu>
@@ -150,13 +146,13 @@ export default function LockersTable({ lockers, isInAdmin = false }: LockersTabl
                 <TableCell>
                   <Button 
                     variant="outline" 
-                    disabled={locker.availability.status === 'unavailable' || locker.availability.status === 'partially_available'} 
+                    disabled={locker.availability.status === 'unavailable'} 
                     onClick={() => {
                       setLockerToBook(locker)
                       setIsBookOpen(true)
                     }}
                   >
-                    {locker.availability.status === 'partially_available' ? 'Indisponible' : 'Réserver'}
+                    Réserver
                   </Button>
                 </TableCell>
               )}
