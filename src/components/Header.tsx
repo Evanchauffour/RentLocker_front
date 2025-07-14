@@ -144,7 +144,7 @@ export default function Header() {
             <div className="flex gap-2">
               <Link href="/sign-up">
                 <Button variant="outline" className="shadow-sm">
-                  S&apos;inscrire
+                  S'inscrire
                 </Button>
               </Link>
               <Link href="/sign-in">

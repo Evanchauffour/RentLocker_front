@@ -30,7 +30,7 @@ export default function WelcomeSection() {
                 className="bg-white text-primary hover:bg-gray-100 shadow-sm flex gap-2 items-center btn-hover-effect"
                 asChild
               >
-                <Link href="/mes-reservations">
+                <Link href="/my-reservations">
                   <CalendarClock size={18} />
                   Mes réservations
                 </Link>
