@@ -12,9 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { DatePicker } from "../ui/datePicker";
 import dayjs from "dayjs";
-import { createReservation } from "@/actions/reservations";
+import { createCheckoutSession } from "@/actions/payments";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
 import { Locker } from "@/app/(admin)/administration/page";
 import { CalendarClock, CreditCard, Key } from "lucide-react";
 
@@ -38,7 +37,6 @@ export default function BookLockerDialog({
   const [selectedEndDate, setSelectedEndDate] = useState<Date>(
     dayjs(endDate).toDate()
   );
-  const router = useRouter();
 
   // Réinitialiser les dates sélectionnées quand le locker change
   React.useEffect(() => {
@@ -65,22 +63,34 @@ export default function BookLockerDialog({
   const fromDate = undefined;
   const toDate = undefined;
 
-  const handleReserve = async (e: React.FormEvent) => {
+  const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!locker) return;
+
     try {
       setLoading(true);
-      await createReservation(
-        locker._id,
-        dayjs(selectedStartDate).format("YYYY-MM-DD"),
-        dayjs(selectedEndDate).format("YYYY-MM-DD")
-      );
-      toast.success("Réservation créée avec succès");
-      onOpenChange(false);
-      router.refresh();
+
+      const result = await createCheckoutSession({
+        lockerId: locker._id,
+        startDate: dayjs(selectedStartDate).format("YYYY-MM-DD"),
+        endDate: dayjs(selectedEndDate).format("YYYY-MM-DD"),
+        price: totalPrice,
+        lockerName: locker.name,
+        metadata: {
+          lockerSize: locker.size,
+          lockerPosition: `C${locker.colNumber} R${locker.rowNumber}`,
+        },
+      });
+
+      if (result.success && result.url) {
+        // Rediriger vers Stripe Checkout
+        window.location.href = result.url;
+      } else {
+        toast.error(result.error || "Erreur lors de la création du paiement");
+      }
     } catch (error) {
-      console.log(error);
-      toast.error("Erreur lors de la réservation");
+      console.error("Erreur lors du paiement:", error);
+      toast.error("Erreur lors de la création du paiement");
     } finally {
       setLoading(false);
     }
@@ -125,7 +135,7 @@ export default function BookLockerDialog({
           </div>
         </div>
 
-        <form onSubmit={handleReserve}>
+        <form onSubmit={handlePayment}>
           <div className="p-6">
             <div className="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100 flex items-start gap-3">
               <div className="bg-blue-100 p-2 rounded-full text-blue-600">
@@ -194,7 +204,9 @@ export default function BookLockerDialog({
               className="bg-primary hover:bg-primary/90 btn-hover-effect flex items-center gap-2"
             >
               <CreditCard className="h-4 w-4" />
-              {loading ? "Réservation en cours..." : "Confirmer la réservation"}
+              {loading
+                ? "Redirection vers le paiement..."
+                : "Procéder au paiement"}
             </Button>
           </DialogFooter>
         </form>
