@@ -23,7 +23,6 @@ async function getLockers(
       endDate,
     });
 
-    // Ajouter les filtres à l'URL si ils sont définis
     if (priceSort && priceSort !== "all") {
       params.append("priceSort", priceSort);
     }

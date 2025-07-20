@@ -33,7 +33,7 @@ export default function CancelReservationButton({
   return (
     <button
       onClick={handleDeleteReservation}
-      className="mt-4 flex gap-2 items-center"
+      className="mt-4 flex gap-2 items-center bg-red-600/80 p-2 rounded-full text-white font-semibold hover:cursor-pointer btn-hover-effect"
     >
       <Trash2 size={16} />
       Annuler la réservation
