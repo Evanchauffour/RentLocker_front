@@ -1,5 +1,6 @@
 import React from "react";
 import { getUserProfile } from "@/actions/user";
+import { getUserReservations } from "@/actions/reservations";
 import ProfileForm from "@/components/ui/ProfileForm";
 import { cookies } from "next/headers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +12,7 @@ export default async function ProfilePage() {
     const token = cookies().get("token")?.value;
 
     const result = await getUserProfile(token);
+    const reservationsResult = await getUserReservations();
 
     if (!result.success) {
         return (
@@ -25,6 +27,17 @@ export default async function ProfilePage() {
     }
 
     const user = result.data;
+
+    // Calculer les statistiques
+    let activeReservations = 0;
+    let totalReservations = 0;
+
+    if (reservationsResult.success && reservationsResult.data) {
+        totalReservations = reservationsResult.data.length;
+        activeReservations = reservationsResult.data.filter((reservation: any) =>
+            reservation.status === "active"
+        ).length;
+    }
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-10 space-y-8 animate-fadeIn">
@@ -115,17 +128,22 @@ export default async function ProfilePage() {
                     <CardContent className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="text-center p-4 bg-white/50 rounded-lg">
-                                <div className="text-2xl font-bold text-green-600">0</div>
+                                <div className="text-2xl font-bold text-green-600">{activeReservations}</div>
                                 <div className="text-sm text-gray-600">Réservations actives</div>
                             </div>
                             <div className="text-center p-4 bg-white/50 rounded-lg">
-                                <div className="text-2xl font-bold text-blue-600">0</div>
+                                <div className="text-2xl font-bold text-blue-600">{totalReservations}</div>
                                 <div className="text-sm text-gray-600">Réservations totales</div>
                             </div>
                         </div>
                         <div className="p-3 bg-green-100/50 rounded-lg border border-green-200">
                             <p className="text-sm text-green-700 text-center">
-                                Compte créé récemment
+                                {totalReservations === 0
+                                    ? "Aucune réservation pour le moment"
+                                    : activeReservations > 0
+                                        ? `${activeReservations} réservation(s) en cours`
+                                        : "Toutes vos réservations sont terminées"
+                                }
                             </p>
                         </div>
                     </CardContent>
