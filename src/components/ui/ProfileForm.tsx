@@ -139,7 +139,7 @@ export default function ProfileForm({ user }) {
       </div>
 
       {/* Password Section */}
-      <div className="space-y-6">
+      <div className="space-y-6" data-password-section>
         <div className="flex items-center gap-2 mb-4">
           <Lock className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-semibold text-gray-800">Sécurité du compte</h3>

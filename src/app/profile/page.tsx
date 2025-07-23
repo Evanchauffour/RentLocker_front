@@ -4,7 +4,8 @@ import ProfileForm from "@/components/ui/ProfileForm";
 import { cookies } from "next/headers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Shield, Calendar, Mail, Phone, MapPin } from "lucide-react";
+import { User, Shield, Calendar, Mail } from "lucide-react";
+import QuickActions from "@/components/ui/QuickActions";
 
 export default async function ProfilePage() {
     const token = cookies().get("token")?.value;
@@ -138,30 +139,8 @@ export default async function ProfilePage() {
                             Actions rapides
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3">
-                        <div className="p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors cursor-pointer">
-                            <div className="flex items-center gap-3">
-                                <div className="bg-purple-100 p-2 rounded-full">
-                                    <Calendar className="h-4 w-4 text-purple-600" />
-                                </div>
-                                <div>
-                                    <p className="font-medium text-sm">Voir mes réservations</p>
-                                    <p className="text-xs text-gray-500">Historique complet</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors cursor-pointer">
-                            <div className="flex items-center gap-3">
-                                <div className="bg-purple-100 p-2 rounded-full">
-                                    <Shield className="h-4 w-4 text-purple-600" />
-                                </div>
-                                <div>
-                                    <p className="font-medium text-sm">Sécurité du compte</p>
-                                    <p className="text-xs text-gray-500">Changer le mot de passe</p>
-                                </div>
-                            </div>
-                        </div>
+                    <CardContent>
+                        <QuickActions />
                     </CardContent>
                 </Card>
             </div>
