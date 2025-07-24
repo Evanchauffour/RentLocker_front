@@ -1,6 +1,13 @@
 import { getUserReservations } from "@/actions/reservations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CalendarRange, MapPin, Clock, Package, TrendingUp, CalendarDays } from "lucide-react";
+import {
+	AlertCircle,
+	CalendarRange,
+	Clock,
+	Package,
+	TrendingUp,
+	CalendarDays,
+} from "lucide-react";
 import dayjs from "dayjs";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -132,7 +139,7 @@ export default async function MyReservationsPage() {
             const isActive = reservation.status === "active";
             const isUpcoming = startDate.isAfter(now);
             const isPast = endDate.isBefore(now);
-            const duration = endDate.diff(startDate, 'day');
+						const duration = endDate.diff(startDate, "day") + 1;
 
             return (
               <Card
@@ -188,10 +195,6 @@ export default async function MyReservationsPage() {
                       <span>{duration} jour{duration > 1 ? 's' : ''}</span>
                     </div>
                   </div>
-
-
-
-
 
                   {/* Actions */}
                   <div className="pt-4 border-t border-gray-100 space-y-3">
